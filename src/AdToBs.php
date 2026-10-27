@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Kmlpandey77\Ndate;
+namespace Ndate22;
 
 use Carbon\Carbon;
 use Exception;
-use Kmlpandey77\Ndate\Constants\Year;
-use Kmlpandey77\Ndate\Contacts\ToDateStringInterface;
-use Kmlpandey77\Ndate\Exceptions\InvalidDateException;
-use Kmlpandey77\Ndate\Traits\ToDateStringTrait;
+use Ndate22\Constants\Year;
+use Ndate22\Contacts\ToDateStringInterface;
+use Ndate22\Exceptions\InvalidDateException;
+use Ndate22\Traits\ToDateStringTrait;
 
 class AdToBs implements ToDateStringInterface
 {
@@ -42,8 +42,6 @@ class AdToBs implements ToDateStringInterface
 
         $this->lang = $lang;
 
-        $this->setDateConstant();
-
         $this->convert($date->format('Y-m-d'));
     }
 
@@ -54,37 +52,22 @@ class AdToBs implements ToDateStringInterface
      */
     public function convert($date): void
     {
-        $total_ad_days = $this->getTotalAdDays($date);
+        $days = $this->getTotalAdDays($date);
 
-        $i = 0;
-        $j = Year::BS_MONTH;
-        $total_bs_days = Year::BS_DAY;
+        $this->number_of_day = $days % 7 + Year::NUMBER_OF_DAY;
 
-        while ($total_ad_days != 0) {
-            $current_month_days = Year::BS[$i][$j];
+        // ponytail: assumes the epoch is the 1st of month 1 (Year::BS_MONTH/BS_DAY)
+        foreach (Year::BS as $row) {
+            for ($month = 1; $month <= 12; $month++) {
+                if ($days < $row[$month]) {
+                    [$this->year, $this->month, $this->day] = [$row[0], $month, $days + 1];
 
-            $total_bs_days++;
-            $this->number_of_day++;
+                    return;
+                }
 
-            if ($total_bs_days > $current_month_days) {
-                $this->month++;
-                $total_bs_days = 1;
-                $j++;
+                $days -= $row[$month];
             }
-
-            $this->number_of_day = ($this->number_of_day > 7) ? 1 : $this->number_of_day;
-            $this->month = ($this->month > 12) ? 1 : $this->month;
-            $this->year = ($this->month === 1 && $j > 12) ? $this->year + 1 : $this->year;
-
-            if ($j > 12) {
-                $j = 1;
-                $i++;
-            }
-
-            $total_ad_days--;
         }
-
-        $this->day = $total_bs_days;
     }
 
     /**
@@ -98,17 +81,6 @@ class AdToBs implements ToDateStringInterface
         $end_date = new \DateTimeImmutable($date);
 
         return (int) $end_date->diff($start_date)->format('%a');
-    }
-
-    /**
-     * Set up initial date data
-     */
-    private function setDateConstant(): void
-    {
-        $this->year = Year::BS_YEAR;
-        $this->month = Year::BS_MONTH;
-        $this->day = Year::BS_DAY;
-        $this->number_of_day = Year::NUMBER_OF_DAY;
     }
 
     public function lang(string $lang): self

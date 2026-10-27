@@ -1,6 +1,6 @@
 <?php
 
-namespace Kmlpandey77\Ndate;
+namespace Ndate22;
 
 use Exception;
 

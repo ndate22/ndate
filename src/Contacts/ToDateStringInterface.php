@@ -1,6 +1,6 @@
 <?php
 
-namespace Kmlpandey77\Ndate\Contacts;
+namespace Ndate22\Contacts;
 
 interface ToDateStringInterface
 {

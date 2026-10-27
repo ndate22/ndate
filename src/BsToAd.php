@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Kmlpandey77\Ndate;
+namespace Ndate22;
 
 use Carbon\Carbon;
-use Kmlpandey77\Ndate\Constants\Year;
-use Kmlpandey77\Ndate\Exceptions\InvalidDateException;
+use Ndate22\Constants\Year;
+use Ndate22\Exceptions\InvalidDateException;
 
 class BsToAd
 {
@@ -29,7 +29,13 @@ class BsToAd
      */
     private function validateDate(): void
     {
-        [$year, $month, $day] = explode('-', $this->date);
+        $parts = explode('-', $this->date);
+
+        if (count($parts) !== 3) {
+            throw new InvalidDateException('Invalid date');
+        }
+
+        [$year, $month, $day] = array_map('intval', $parts);
 
         if ($year < Year::BS_YEAR || $year > Year::BS_END_YEAR) {
             throw new InvalidDateException('Invalid date');
@@ -39,75 +45,25 @@ class BsToAd
             throw new InvalidDateException('Invalid date');
         }
 
-        if ($day < 1 || $day > 32) {
+        if ($day < 1 || $day > Year::BS[$year - Year::BS_YEAR][$month]) {
             throw new InvalidDateException('Invalid date');
         }
     }
 
     private function convert(): void
     {
-        [$yy, $mm, $dd] = explode('-', $this->date);
+        [$yy, $mm, $dd] = array_map('intval', explode('-', $this->date));
 
-        $defEyy = Year::AD_YEAR;
-        $defEmm = Year::AD_MONTH;
-        $defEdd = Year::AD_DAY - 1;
-        $defNyy = Year::BS_YEAR;
+        $index = $yy - Year::BS_YEAR;
+        $days = $dd - 1;
 
-        $totalNDays = $this->calculateTotalNDays((int) $yy, (int) $mm, (int) $dd, $defNyy);
-        $this->finalDate = $this->calculateAdDate($totalNDays, $defEyy, $defEmm, $defEdd);
-    }
-
-    private function calculateTotalNDays(int $yy, int $mm, int $dd, int $defNyy): int
-    {
-        $totalNDays = 0;
-        $currentYearIndex = 0;
-
-        for ($i = 0; $i < ($yy - $defNyy); $i++) {
-            for ($j = 1; $j <= 12; $j++) {
-                $totalNDays += Year::BS[$currentYearIndex][$j];
-            }
-            $currentYearIndex++;
+        foreach (array_slice(Year::BS, 0, $index) as $row) {
+            $days += array_sum(array_slice($row, 1));
         }
 
-        for ($j = 1; $j < $mm; $j++) {
-            $totalNDays += Year::BS[$currentYearIndex][$j];
-        }
+        $days += array_sum(array_slice(Year::BS[$index], 1, $mm - 1));
 
-        return $totalNDays + $dd;
-    }
-
-    private function calculateAdDate(int $totalNDays, int $year, int $month, int $day): Carbon
-    {
-        $monthDays = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        $leapMonthDays = [0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        $dayOfWeek = 7;
-
-        while ($totalNDays > 0) {
-            $daysInMonth = $this->isLeapYear($year) ? $leapMonthDays[$month] : $monthDays[$month];
-
-            $day++;
-            $dayOfWeek++;
-            $totalNDays--;
-
-            if ($day > $daysInMonth) {
-                $month++;
-                $day = 1;
-
-                if ($month > 12) {
-                    $year++;
-                    $month = 1;
-                }
-            }
-
-            if ($dayOfWeek > 7) {
-                $dayOfWeek = 1;
-            }
-        }
-
-        $formattedMonth = str_pad((string) $month, 2, '0', STR_PAD_LEFT);
-        $formattedDay = str_pad((string) $day, 2, '0', STR_PAD_LEFT);
-
-        return Carbon::parse("$year-$formattedMonth-$formattedDay");
+        $this->finalDate = Carbon::parse(Year::AD_START_DATE)->addDays($days);
     }
 
     public function isLeapYear(int $year): bool

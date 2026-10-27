@@ -1,11 +1,11 @@
 {
-    "name": "kmlpandey77/ndate",
+    "name": "ndate22/ndate",
     "description": "Nepali date converter",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Kmlpandey77\\Ndate\\": "src/"
+            "Ndate22\\": "src/"
         }
     },
     "authors": [

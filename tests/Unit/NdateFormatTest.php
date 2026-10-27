@@ -1,6 +1,6 @@
 <?php
 
-use Kmlpandey77\Ndate\Ndate;
+use Ndate22\Ndate;
 
 test('AD date convert to BS Date with format', function () {
     $ad = '2023-11-08';

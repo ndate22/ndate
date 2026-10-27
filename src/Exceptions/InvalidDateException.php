@@ -1,5 +1,5 @@
 <?php
 
-namespace Kmlpandey77\Ndate\Exceptions;
+namespace Ndate22\Exceptions;
 
 class InvalidDateException extends \Exception {}
