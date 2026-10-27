@@ -1,6 +1,6 @@
 <?php
 
-namespace Kmlpandey77\Ndate\Constants;
+namespace Ndate22\Constants;
 
 class Year
 {

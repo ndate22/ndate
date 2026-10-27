@@ -1,7 +1,7 @@
 <?php
 
-use Kmlpandey77\Ndate\Exceptions\InvalidDateException;
-use Kmlpandey77\Ndate\Ndate;
+use Ndate22\Exceptions\InvalidDateException;
+use Ndate22\Ndate;
 
 test('AD date convert to BS Date', function () {
     $ad = '2023-11-08';
@@ -29,6 +29,13 @@ test('Invalid Date', function () {
 
     expect(fn () => Ndate::to_bs($ad))->toThrow(InvalidDateException::class)
         ->and(fn () => Ndate::to_ad($bs))->toThrow(InvalidDateException::class);
+});
+
+test('BS day beyond month length is invalid', function () {
+    // Kartik 2080 has 30 days
+    expect((string) Ndate::to_ad('2080-07-30'))->toBe('2023-11-16')
+        ->and(fn () => Ndate::to_ad('2080-07-31'))->toThrow(InvalidDateException::class)
+        ->and(fn () => Ndate::to_ad('2080-07'))->toThrow(InvalidDateException::class);
 });
 
 test('Asar 2081 date issue', function () {

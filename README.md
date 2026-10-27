@@ -6,14 +6,14 @@ A PHP library for `AD to BS` and `BS to AD`
 
 Run the following command from you terminal:
 
-`composer require kmlpandey77/ndate`
+`composer require ndate22/ndate`
 
 ## Usage
 
 ### AD to BS
 
 ```php
-use Kmlpandey77\Ndate\Ndate;
+use Ndate22\Ndate;
 
 # Example 01
 
@@ -29,7 +29,7 @@ $date_to_bs = Ndate::to_bs("2023-11-08", 'd/m/Y');
 
 echo $date_to_bs // OUTPUT: 22/07/2080
 echo $date_to_bs->format('l, d M, Y') // Wednesday, 22 Kartik, 2080
-echo $date_to_bs->format('l, d M, Y')->lang(Ndate::NP) // OUTPUT: बुधवार, २२ कार्तिक, २०८०
+echo $date_to_bs->lang(Ndate::NP)->format('l, d M, Y') // OUTPUT: बुधवार, २२ कार्तिक, २०८०
 ```
 
 
@@ -50,7 +50,7 @@ echo $date_to_bs->format('l, d M, Y')->lang(Ndate::NP) // OUTPUT: बुधव�
 ### BS to AD
 
 ```php
-use Kmlpandey77\Ndate\Ndate;
+use Ndate22\Ndate;
 
 # Example 01
 

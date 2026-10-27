@@ -1,11 +1,11 @@
 <?php
 
-namespace Kmlpandey77\Ndate\Traits;
+namespace Ndate22\Traits;
 
-use Kmlpandey77\Ndate\Constants\Month;
-use Kmlpandey77\Ndate\Constants\Weekday;
-use Kmlpandey77\Ndate\Helper;
-use Kmlpandey77\Ndate\Ndate;
+use Ndate22\Constants\Month;
+use Ndate22\Constants\Weekday;
+use Ndate22\Helper;
+use Ndate22\Ndate;
 
 /**
  * @property int $day
@@ -22,19 +22,10 @@ trait ToDateStringTrait
      */
     protected function toStringFormat(): string
     {
-        $formatString = preg_replace('/[^a-zA-Z]+/', '', $this->format);
-
-        $search = str_split($formatString);
         $replace = [];
-        foreach ($search as $key) {
-            $method = self::FORMATTER[$key] ?? null;
-
-            if ($method && method_exists(self::class, $method)) {
-                $replace[$key] = $this->$method();
-            } elseif ($method && property_exists(self::class, $method)) {
-                $replace[$key] = $this->$method;
-            } else {
-                $replace[$key] = $key;
+        foreach (self::FORMATTER as $key => $method) {
+            if (str_contains($this->format, $key)) {
+                $replace[$key] = (string) $this->$method();
             }
         }
 
