@@ -169,3 +169,11 @@ test('Future date', function () {
     expect("{$to_bs}")->toBe($bs)
         ->and("{$to_ad}")->toBe($ad);
 });
+
+test('2083 corrected month lengths', function () {
+    // Ashwin and Kartik 2083 have 31 days
+    expect((string) Ndate::to_bs('2026-10-17'))->toBe('2083-06-31')
+        ->and((string) Ndate::to_bs('2026-10-18'))->toBe('2083-07-01')
+        ->and((string) Ndate::to_ad('2083-06-31'))->toBe('2026-10-17')
+        ->and((string) Ndate::to_ad('2083-07-31'))->toBe('2026-11-17');
+});
