@@ -60,6 +60,10 @@ $date->year();      // 2080
 $date->month();     // 7
 $date->day();       // 22
 $date->dayOfWeek(); // 3 (0 = Sunday)
+$date->fiscalYear(); // 2080/81 (fiscal year starts Shrawan 1)
+$date->toCarbon();   // Carbon instance of the AD date
+
+Ndate::to_bs(new DateTime('2023-11-08')); // any DateTimeInterface works too
 ```
 
 ### BS to AD
@@ -77,6 +81,9 @@ echo $date_to_ad // OUTPUT: 2023-11-08
 $date_to_ad = Ndate::to_ad("2080-07-22", 'd/m/Y');
 
 echo $date_to_ad // OUTPUT: 08/11/2023
+echo $date_to_ad->lang(Ndate::NP) // OUTPUT: ०८/११/२०२३ (digits only)
+echo $date_to_ad->format('Y-m-d') // OUTPUT: २०२३-११-०८
+$date_to_ad->toCarbon(); // Carbon instance
 ```
 
 ### Helpers
@@ -87,5 +94,9 @@ use Ndate22\Ndate;
 Ndate::daysInMonth(2080, 7);    // 30
 Ndate::isValidBs('2080-07-22'); // true
 Ndate::isValidBs('2080-07-31'); // false (Kartik 2080 has 30 days)
+
+// Month grid, weeks start on Sunday, null pads the first and last week
+Ndate::calendar(2080, 7);
+// [[null, null, null, 1, 2, 3, 4], [5, ...], ..., [26, 27, 28, 29, 30, null, null]]
 ```
 

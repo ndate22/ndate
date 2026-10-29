@@ -199,3 +199,33 @@ test('Integer getters', function () {
         ->and($date->day())->toBe(22)
         ->and($date->dayOfWeek())->toBe(3);
 });
+
+test('Fiscal year', function () {
+    expect(Ndate::to_bs('2023-11-08')->fiscalYear())->toBe('2080/81')
+        ->and(Ndate::to_bs('2023-04-20')->fiscalYear())->toBe('2079/80')
+        ->and(Ndate::to_bs('2023-11-08')->lang(Ndate::NP)->fiscalYear())->toBe('२०८०/८१');
+});
+
+test('BS month calendar', function () {
+    // Kartik 2080 starts on a Wednesday and has 30 days
+    $weeks = Ndate::calendar(2080, 7);
+
+    expect($weeks)->toHaveCount(5)
+        ->and($weeks[0])->toBe([null, null, null, 1, 2, 3, 4])
+        ->and($weeks[4])->toBe([26, 27, 28, 29, 30, null, null]);
+});
+
+test('Carbon interop', function () {
+    $ad = new DateTimeImmutable('2023-11-08');
+
+    expect((string) Ndate::to_bs($ad))->toBe('2080-07-22')
+        ->and(Ndate::to_bs('2023-11-08')->toCarbon()->format('Y-m-d'))->toBe('2023-11-08')
+        ->and(Ndate::to_ad('2080-07-22')->toCarbon()->format('Y-m-d'))->toBe('2023-11-08');
+});
+
+test('BS to AD in Nepali digits', function () {
+    $date = Ndate::to_ad('2080-07-22', 'd/m/Y');
+
+    expect((string) $date->lang(Ndate::NP))->toBe('०८/११/२०२३')
+        ->and($date->format('Y-m-d'))->toBe('२०२३-११-०८');
+});

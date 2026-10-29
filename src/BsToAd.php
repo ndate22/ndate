@@ -66,6 +66,25 @@ class BsToAd
         $this->finalDate = Carbon::parse(Year::AD_START_DATE)->addDays($days);
     }
 
+    public function lang(string $lang): self
+    {
+        $this->lang = $lang;
+
+        return $this;
+    }
+
+    public function format(string $format): string
+    {
+        $this->format = $format;
+
+        return $this->__toString();
+    }
+
+    public function toCarbon(): Carbon
+    {
+        return $this->finalDate->copy();
+    }
+
     public function isLeapYear(int $year): bool
     {
         return ($year % 400 == 0) || (($year % 100 != 0) && ($year % 4 == 0));
@@ -73,6 +92,11 @@ class BsToAd
 
     public function __toString(): string
     {
-        return $this->finalDate->format($this->format);
+        $date = $this->finalDate->format($this->format);
+
+        // ponytail: digits only; AD month/day names stay English
+        return $this->lang == Ndate::NP
+            ? strtr($date, ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'])
+            : $date;
     }
 }
