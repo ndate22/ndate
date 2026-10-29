@@ -25,6 +25,8 @@ class AdToBs implements ToDateStringInterface
 
     private string $lang;
 
+    private Carbon $adDate;
+
     /**
      * @throws InvalidDateException
      */
@@ -41,6 +43,7 @@ class AdToBs implements ToDateStringInterface
         }
 
         $this->lang = $lang;
+        $this->adDate = $date;
 
         $this->convert($date->format('Y-m-d'));
     }
@@ -133,6 +136,24 @@ class AdToBs implements ToDateStringInterface
     public function dayOfWeek(): int
     {
         return $this->number_of_day - 1;
+    }
+
+    /**
+     * Nepal fiscal year (starts Shrawan 1), e.g. 2080/81
+     */
+    public function fiscalYear(): string
+    {
+        $start = $this->month >= 4 ? $this->year : $this->year - 1;
+
+        return $this->localize($start.'/'.Helper::addLeadingZeros(($start + 1) % 100, 2));
+    }
+
+    /**
+     * The AD date this was converted from
+     */
+    public function toCarbon(): Carbon
+    {
+        return $this->adDate->copy();
     }
 
     public function __toString()

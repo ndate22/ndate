@@ -19,7 +19,7 @@ class Ndate
     /**
      * @throws Exception
      */
-    public static function to_bs(?string $date = null, ?string $format = null, string $lang = 'en')
+    public static function to_bs(string|\DateTimeInterface|null $date = null, ?string $format = null, string $lang = 'en')
     {
         return new AdToBs($date, $format, $lang);
     }
@@ -55,5 +55,22 @@ class Ndate
         } catch (InvalidDateException) {
             return false;
         }
+    }
+
+    /**
+     * BS month as weeks (Sunday first); each week has 7 slots of day number or null
+     *
+     * @return array<int, array<int, int|null>>
+     *
+     * @throws InvalidDateException
+     */
+    public static function calendar(int $year, int $month): array
+    {
+        $days = self::daysInMonth($year, $month);
+        $offset = self::to_ad(sprintf('%d-%02d-01', $year, $month))->finalDate->dayOfWeek;
+
+        $cells = array_merge(array_fill(0, $offset, null), range(1, $days));
+
+        return array_chunk(array_pad($cells, (int) ceil(count($cells) / 7) * 7, null), 7);
     }
 }
