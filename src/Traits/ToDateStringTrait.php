@@ -4,12 +4,14 @@ namespace Ndate22\Traits;
 
 use Ndate22\Constants\Month;
 use Ndate22\Constants\Weekday;
+use Ndate22\Constants\Year;
 use Ndate22\Helper;
 use Ndate22\Ndate;
 
 /**
  * @property int $day
  * @property int $month
+ * @property int $year
  * @property int $number_of_day
  * @property string $lang
  */
@@ -78,5 +80,39 @@ trait ToDateStringTrait
         return $this->lang == Ndate::NP
             ? Month::NP[$this->month - 1]
             : Month::NP_EN[$this->month - 1];
+    }
+
+    /**
+     * ISO day of the week, 1 (Monday) to 7 (Sunday)
+     */
+    public function iso_day_of_week(): string
+    {
+        return $this->localize((string) ($this->number_of_day - 1 ?: 7));
+    }
+
+    /**
+     * Day of the week, 0 (Sunday) to 6 (Saturday)
+     */
+    public function day_of_week(): string
+    {
+        return $this->localize((string) ($this->number_of_day - 1));
+    }
+
+    public function days_in_month(): string
+    {
+        return $this->localize((string) Year::BS[$this->year - Year::BS_YEAR][$this->month]);
+    }
+
+    /**
+     * Two digit year
+     */
+    public function short_year(): string
+    {
+        return $this->localize(Helper::addLeadingZeros($this->year % 100, 2));
+    }
+
+    private function localize(string $value): string
+    {
+        return $this->lang == Ndate::NP ? $this->toNepaliNumber($value) : $value;
     }
 }

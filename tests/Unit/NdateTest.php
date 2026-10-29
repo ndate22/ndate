@@ -169,3 +169,33 @@ test('Future date', function () {
     expect("{$to_bs}")->toBe($bs)
         ->and("{$to_ad}")->toBe($ad);
 });
+
+test('2083 corrected month lengths', function () {
+    // Ashwin and Kartik 2083 have 31 days
+    expect((string) Ndate::to_bs('2026-10-17'))->toBe('2083-06-31')
+        ->and((string) Ndate::to_bs('2026-10-18'))->toBe('2083-07-01')
+        ->and((string) Ndate::to_ad('2083-06-31'))->toBe('2026-10-17')
+        ->and((string) Ndate::to_ad('2083-07-31'))->toBe('2026-11-17');
+});
+
+test('Days in BS month', function () {
+    expect(Ndate::daysInMonth(2080, 7))->toBe(30)
+        ->and(fn () => Ndate::daysInMonth(2101, 1))->toThrow(InvalidDateException::class)
+        ->and(fn () => Ndate::daysInMonth(2080, 13))->toThrow(InvalidDateException::class);
+});
+
+test('Validate BS date', function () {
+    expect(Ndate::isValidBs('2080-07-22'))->toBeTrue()
+        ->and(Ndate::isValidBs('2080-07-31'))->toBeFalse()
+        ->and(Ndate::isValidBs('2101-01-01'))->toBeFalse()
+        ->and(Ndate::isValidBs('garbage'))->toBeFalse();
+});
+
+test('Integer getters', function () {
+    $date = Ndate::to_bs('2023-11-08')->lang(Ndate::NP);
+
+    expect($date->year())->toBe(2080)
+        ->and($date->month())->toBe(7)
+        ->and($date->day())->toBe(22)
+        ->and($date->dayOfWeek())->toBe(3);
+});

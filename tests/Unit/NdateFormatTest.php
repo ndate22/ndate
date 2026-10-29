@@ -25,3 +25,12 @@ test('AD date convert to BS Date with days and month format', function () {
         ->and("{$date->format('l, d M, Y')}")->toBe('Wednesday, 22 Kartik, 2080')
         ->and("{$date->lang(Ndate::NP)}")->toBe('बुधवार, २२ कार्तिक, २०८०');
 });
+
+test('Weekday number, days in month and short year format', function () {
+    // 2080-07-22 is a Wednesday; Kartik 2080 has 30 days
+    $date = Ndate::to_bs('2023-11-08', 'N w t y');
+
+    expect("$date")->toBe('3 3 30 80')
+        ->and("{$date->lang(Ndate::NP)}")->toBe('३ ३ ३० ८०')
+        ->and(Ndate::to_bs('2023-11-12', 'N w')->__toString())->toBe('7 0');
+});

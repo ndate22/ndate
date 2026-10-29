@@ -112,6 +112,29 @@ class AdToBs implements ToDateStringInterface
         return $this->lang == 'np' ? $this->toNepaliNumber($this->year) : $this->year;
     }
 
+    public function year(): int
+    {
+        return $this->year;
+    }
+
+    public function month(): int
+    {
+        return $this->month;
+    }
+
+    public function day(): int
+    {
+        return $this->day;
+    }
+
+    /**
+     * Day of the week, 0 (Sunday) to 6 (Saturday)
+     */
+    public function dayOfWeek(): int
+    {
+        return $this->number_of_day - 1;
+    }
+
     public function __toString()
     {
         return $this->toStringFormat();
