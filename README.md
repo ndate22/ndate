@@ -111,6 +111,24 @@ $date->toCarbon();                 // Carbon instance
 
 The BS input must be `Y-m-d`. The output format uses [PHP date format](https://www.php.net/manual/en/datetime.format.php) tokens (it is formatted by Carbon). `lang(Ndate::NP)` converts the digits only; AD month and weekday names stay in English.
 
+## BS date arithmetic
+
+Arithmetic works in BS and returns a new object; the original is left unchanged. Format and language carry over.
+
+```php
+$date = Ndate::to_bs('2023-11-08'); // 2080-07-22
+
+echo $date->addDays(10);   // 2080-08-02
+echo $date->addDays(-22);  // 2080-06-30
+echo $date->addMonths(1);  // 2080-08-22
+echo $date->addYears(1);   // 2081-07-22
+
+$date->diffInDays($date->addDays(10)); // 10
+$date->addDays(10)->diffInDays($date); // -10
+```
+
+`addMonths()` clamps the day to the length of the target month: Jestha 2080 has 32 days and Ashad 31, so `2080-02-32` plus one month is `2080-03-31`. Going outside the supported range throws `InvalidDateException`.
+
 ## Helpers
 
 ```php
@@ -138,6 +156,38 @@ Ndate::calendar(2080, 7);
 ```
 
 `daysInMonth()` and `calendar()` throw `InvalidDateException` for a year outside 1970–2100 or a month outside 1–12.
+
+## Laravel
+
+No service provider is needed. These snippets cover the common cases.
+
+Validation rule for a BS date field:
+
+```php
+use Closure;
+use Ndate22\Ndate;
+
+$request->validate([
+    'dob' => ['required', function (string $attribute, mixed $value, Closure $fail) {
+        if (! Ndate::isValidBs((string) $value)) {
+            $fail("The {$attribute} must be a valid BS date (Y-m-d).");
+        }
+    }],
+]);
+```
+
+Carbon macro, registered in `AppServiceProvider::boot()`:
+
+```php
+use Carbon\Carbon;
+use Ndate22\Ndate;
+
+Carbon::macro('toBs', function (?string $format = null) {
+    return Ndate::to_bs($this, $format);
+});
+
+echo now()->toBs('d M Y'); // e.g. 22 Kartik 2080
+```
 
 ## Error handling
 

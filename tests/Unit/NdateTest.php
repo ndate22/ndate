@@ -234,3 +234,21 @@ test('Last supported AD date', function () {
     expect((string) Ndate::to_bs('2044-04-14'))->toBe('2100-12-30')
         ->and(fn () => Ndate::to_bs('2044-04-15'))->toThrow(InvalidDateException::class);
 });
+
+test('BS date arithmetic', function () {
+    $bs = fn (string $date) => Ndate::to_bs(Ndate::to_ad($date)->toCarbon());
+
+    $date = $bs('2080-07-22');
+
+    expect((string) $date->addDays(10))->toBe('2080-08-02')
+        ->and((string) $date->addDays(-22))->toBe('2080-06-30')
+        ->and((string) $date)->toBe('2080-07-22')
+        // Jestha 2080 has 32 days, Ashad 31: day is clamped
+        ->and((string) $bs('2080-02-32')->addMonths(1))->toBe('2080-03-31')
+        ->and((string) $bs('2080-12-15')->addMonths(1))->toBe('2081-01-15')
+        ->and((string) $bs('2081-01-15')->addMonths(-1))->toBe('2080-12-15')
+        ->and((string) $date->addYears(1))->toBe('2081-07-22')
+        ->and($date->diffInDays($date->addDays(10)))->toBe(10)
+        ->and($date->addDays(10)->diffInDays($date))->toBe(-10)
+        ->and(fn () => $bs('2100-12-01')->addMonths(1))->toThrow(InvalidDateException::class);
+});

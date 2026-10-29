@@ -156,6 +156,50 @@ class AdToBs implements ToDateStringInterface
         return $this->adDate->copy();
     }
 
+    /**
+     * New date moved by the given days (negative goes back)
+     *
+     * @throws InvalidDateException
+     */
+    public function addDays(int $days): self
+    {
+        return new self($this->adDate->copy()->addDays($days), $this->format, $this->lang);
+    }
+
+    /**
+     * New date moved by BS months; the day is clamped to the target month's length
+     *
+     * @throws InvalidDateException
+     */
+    public function addMonths(int $months): self
+    {
+        $total = $this->year * 12 + $this->month - 1 + $months;
+        [$year, $month] = [intdiv($total, 12), $total % 12 + 1];
+        $day = min($this->day, Ndate::daysInMonth($year, $month));
+
+        $ad = Ndate::to_ad(sprintf('%d-%02d-%02d', $year, $month, $day))->finalDate;
+
+        return new self($ad, $this->format, $this->lang);
+    }
+
+    /**
+     * @throws InvalidDateException
+     */
+    public function addYears(int $years): self
+    {
+        return $this->addMonths($years * 12);
+    }
+
+    /**
+     * Days from this date to the other (negative when the other is earlier)
+     */
+    public function diffInDays(self $other): int
+    {
+        return (int) $this->adDate->copy()->startOfDay()
+            ->diff($other->adDate->copy()->startOfDay())
+            ->format('%r%a');
+    }
+
     public function __toString()
     {
         return $this->toStringFormat();
