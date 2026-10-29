@@ -6,11 +6,11 @@ class Year
 {
     const AD_START_DATE = '1913-04-13';
 
-    const AD_END_DATE = '2043-04-14';
+    const AD_END_DATE = '2044-04-14';
 
     const AD_YEAR = 1913;
 
-    const AD_END_YEAR = 1943;
+    const AD_END_YEAR = 2044;
 
     const AD_MONTH = 4;
 

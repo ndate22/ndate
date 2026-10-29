@@ -23,7 +23,7 @@ composer require ndate22/ndate
 
 | Conversion          | From         | To           |
 |---------------------|--------------|--------------|
-| AD → BS (`to_bs`)   | `1913-04-13` | `2043-04-14` |
+| AD → BS (`to_bs`)   | `1913-04-13` | `2044-04-14` |
 | BS → AD (`to_ad`)   | `1970-01-01` | `2100-12-30` |
 
 Dates outside this range throw `Ndate22\Exceptions\InvalidDateException`.

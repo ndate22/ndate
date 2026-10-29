@@ -24,7 +24,7 @@ test('BS date convert to AD Date', function () {
 });
 
 test('Invalid Date', function () {
-    $ad = '2043-11-08';
+    $ad = '2044-11-08';
     $bs = '2101-11-08';
 
     expect(fn () => Ndate::to_bs($ad))->toThrow(InvalidDateException::class)
@@ -228,4 +228,9 @@ test('BS to AD in Nepali digits', function () {
 
     expect((string) $date->lang(Ndate::NP))->toBe('०८/११/२०२३')
         ->and($date->format('Y-m-d'))->toBe('२०२३-११-०८');
+});
+
+test('Last supported AD date', function () {
+    expect((string) Ndate::to_bs('2044-04-14'))->toBe('2100-12-30')
+        ->and(fn () => Ndate::to_bs('2044-04-15'))->toThrow(InvalidDateException::class);
 });
